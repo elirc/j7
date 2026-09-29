@@ -1,0 +1,12 @@
+# oms-snapshot-v1
+C|c-100|Ada Lovelace|ada@example.com|555-0100|2026-01-05T09:00
+C|c-101|Grace Hopper|grace@example.com|555-0101|2026-01-06T09:30
+P|p-200|Notebook|NB-001|10.00|true
+P|p-201|Pen|PN-002|2.50|true
+P|p-202|Desk lamp|DL-003|35.00|true
+O|o-300|c-100|DRAFT|5.00|2026-02-01T10:00|2026-02-01T10:05
+I|o-300|p-200|Notebook|2|10.00
+O|o-301|c-101|PAID|0.00|2026-02-02T11:00|2026-02-02T11:30
+I|o-301|p-201|Pen|4|2.50
+I|o-301|p-202|Desk lamp|1|35.00
+END|2|3|2|3

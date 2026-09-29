@@ -1,0 +1,17 @@
+# Verification and remaining limits
+
+The project was reviewed and tested in an isolated copy before delivery. Original saved data and old compiled artifacts are excluded from the finite delivery manifest. The central implementation report and project manifest `14690be423dc` record changed source, course files, backups, hash checks, and evidence.
+
+Verification used Microsoft OpenJDK 17.0.10 and the project runner's `--release 17 -Xlint:all` compilation. The reviewed full-access compiler run succeeded. Seven initial tests failed against the original implementation: discount reload, service order ownership, item ownership, paid edit protection, sub-cent pricing, live collection deletion, and carriage-return round trips. The final suite passed **35 Java regression tests**.
+
+The expanded tests cover input/output copies, snapshot isolation, rejected-discount timestamps, quantity replacement, discount-preserving rejection, empty submission, terminal-state edits, inactive products, checked quantity growth, paid restoration, impossible discounts, duplicate identities, missing references, duplicate item lines, strict booleans, legacy migration, authoritative snapshot corruption, footer/count validation, orphan items, codec errors, failed atomic replacement cleanup, repeated saves, and non-mutating loads of a new directory.
+
+A separate script passed **seven CLI scenarios in new Java processes**, for **42 checks total**. It verified customer/product reload, preserved discount, quantity persistence with price snapshot, sub-cent discount refusal, paid edit refusal, EOF during incomplete input, and unchanged file bytes on corrupt startup. The project runner executes the 35 Java cases; central CLI logs and results are retained under `astra-remaining-improvements/checks/j7/`.
+
+The application is single-threaded. No concurrent service use, multi-process file coordination, HTTP server, browser UI, authentication, database, inventory reservation, payment, refund, or message broker was implemented or tested. Paid cancellation remains a local status transition, and should not be presented as a completed refund workflow.
+
+Edits remain in memory until explicit save, exit, or EOF handling. A forced termination can lose unsaved work. Failed normal exit retains the session for retry; that branch was source-reviewed, while automated failure injection exercised storage replacement itself. Atomic replacement is required and fails visibly if unsupported. Power-loss durability and network-filesystem behavior are not established.
+
+The snapshot footer detects missing records and ordinary truncation by comparing counts. It is not a cryptographic integrity mechanism. Loading validates identities, references, model values, and complete order invariants, but does not verify historical business events that the application never recorded. Customer email validation is intentionally basic, and SKU uniqueness is not enforced.
+
+Legacy migration requires all four old files or a wholly new dataset. The first successful save creates `oms.snapshot.txt` and leaves legacy files unchanged. The snapshot then becomes authoritative; old binaries do not understand it and should not be alternated against the same directory. Strict validation can reject previously tolerated incomplete or invalid data, which should be repaired in a reviewed copy. CLI failures are text diagnostics rather than a structured automation exit-code contract. These boundaries are explicit subjects for the next CRUD web-development exercises.

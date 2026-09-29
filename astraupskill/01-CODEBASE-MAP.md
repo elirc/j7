@@ -1,0 +1,17 @@
+# Read the code around the order's consistency boundary
+
+[App.java](../src/oms/App.java) constructs `FileDataStore`, loads a complete `StoreSnapshot`, and initializes customer, product, and order services. Failed loading stops startup. The menu translates prompts into commands and prints results. Save is explicit through menu 12 or exit through 13. A failed normal exit keeps the session open so the user can retry; EOF attempts to save completed work and then closes input.
+
+[CustomerService.java](../src/oms/service/CustomerService.java) and [ProductService.java](../src/oms/service/ProductService.java) own catalog maps. Their model objects are immutable, and the `all` methods return collection copies rather than live map views. Constructor duplicate checks prevent silently replacing one record with another during restoration. Product activity controls whether it can be added to an order; this project has no inventory quantity or reservation model.
+
+[OrderService.java](../src/oms/service/OrderService.java) connects references: a new order needs an existing customer, and an added line needs an existing active product. It copies orders accepted during construction and returns detached copies from create, lookup, list, and `all`. `requireOrder` is private and obtains the owned aggregate for a command. The public quantity command delegates to `Order.setItemQuantity` rather than exposing a mutable item reference.
+
+[Order.java](../src/oms/domain/Order.java) owns the item collection, discount, status, and timestamps. Its public edit methods enforce editable status and validate candidates before mutation. `getSubtotal` derives a sum from current item line totals; `getTotal` subtracts the validated discount. These values are no longer separate mutable caches that can disagree with an escaped item.
+
+`Order.restore` receives all saved items at once. It copies them, rejects duplicate product lines, validates the discount against their subtotal, and checks whether the saved status requires items. It preserves saved timestamps instead of calling interactive edit methods that would touch `updatedAt`. `copy` uses the same complete construction path. This makes restoration a clear entry point rather than a partially initialized object plus a series of public repair calls.
+
+[OrderItem.java](../src/oms/domain/OrderItem.java) stores the product ID, captured product name, quantity, and captured unit price. Quantity changes validate positivity; increments use checked integer addition. `Order.getItems` returns item copies. The catalog price and the order's price snapshot are different concepts, even if this small catalog currently has no price-update command.
+
+[DomainValues.java](../src/oms/domain/DomainValues.java) centralizes required text and decimal precision. [OrderStatus.java](../src/oms/domain/OrderStatus.java) defines allowed transitions. `Order` adds the nonempty-item and editability rules around that transition graph.
+
+[StoreSnapshot.java](../src/oms/persistence/StoreSnapshot.java) copies all collections, deep-copies orders, and validates duplicate identities and customer/product references through service constructors. [FileDataStore.java](../src/oms/persistence/FileDataStore.java) reads tagged records, groups items by order, restores complete aggregates, and writes a single atomic snapshot. [DelimitedFileUtil.java](../src/oms/persistence/DelimitedFileUtil.java) owns field escaping. The [regression harness](../test/oms/RegressionTests.java) exercises these actual boundaries with objects and real temporary files.
