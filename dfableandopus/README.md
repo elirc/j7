@@ -8,7 +8,7 @@ An order with two units at 10.00 and a 5.00 discount reloaded from disk as a 20.
 
 ## Target stacks and off-stack framing
 
-Java 17, no frameworks, no database. Answer in Java and translate immediately, using `../astraupskill/08-THE-SAME-ORDER-IN-CSHARP.md`, which maps this project onto C# and EF Core: `OrderItem` as an `[Owned]` type, the restoration bug as a missing `Include`, and each domain refusal as a status code (400, 404, 409, 422). For a Node interview the same mapping holds with Prisma nested writes in place of owned types; say which part of the mapping you are confident about and which you are not.
+Java 17, no frameworks, no database. Answer in Java and translate immediately, using `../astraupskill/08-THE-SAME-ORDER-IN-CSHARP.md`, which maps this project onto C# and EF Core: `OrderItem` as an `[Owned]` type, the restoration bug as a missing `Include` on a non-owned navigation, and each domain refusal as a status code (400, 404, 409, 422). For a Node interview the same mapping holds with Prisma nested writes in place of owned types; say which part of the mapping you are confident about and which you are not.
 
 ## Two-week use
 

@@ -32,14 +32,10 @@ Finish by reading the [regression tests](../test/oms/RegressionTests.java). Map 
 <details>
 <summary>Answers: the expected figures, collected</summary>
 
-- Create an active Notebook product with menu 3, SKU NOTE, and price 10.00.
-- Use menu 10 to apply a discount of 5.00.
-- Menu 8 should show subtotal 20.00, discount 5.
-- 00, and total 15.00.
-- The discount must remain 5.00.
-- The price remains 10.00 and total becomes 25.
-- Change the discount to 25.00, then try to reduce quantity to 2.
-- The proposed subtotal would be 20.00, so the command must fail and preserve quantity 3, discount 25.
-- 00, and total 5.00.
+- After quantity 2 at 10.00 and a 5.00 discount: subtotal 20.00, discount 5.00, total 15.00, and the same after restart.
+- After menu 14 sets quantity 3: unit price stays 10.00, total 25.00.
+- With discount 25.00, reducing quantity to 2 is refused (`Could not update quantity: Reduce the discount before reducing the subtotal.`). Quantity stays 3, discount 25.00, total 5.00.
+- In PAID, menus 14, 7 and 10 each print `Orders in PAID status cannot be edited.`
+- Corrupt copy: `Startup stopped: Failed to load order data: Invalid data record ...` and `$beforeHash -eq $afterHash` is `True`. Check `$LASTEXITCODE` too: it is `0`, because `App.main` returns normally after a failed load (`src/oms/App.java:51-54`).
 
 </details>
